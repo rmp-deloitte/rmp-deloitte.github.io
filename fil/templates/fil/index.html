@@ -1,0 +1,109 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" style="grid-area : 1 / 1 / 1 / 13;">
+    <a href="{% url 'portal:index' %}"><img style="height : 50px; width : 50px;" src="{% static 'images/usms-seal.png' %}"/></a>
+    <div class="navbar-brand" style="letter-spacing : 2px;">
+        <span class="mx-4" style="cursor : default; font-weight : 600;">Federal Inmate Lookup</span>
+    </div>
+    <div class="collapse navbar-collapse" id="NavbarMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false"><span class='fa fa-user-circle'></span>&nbsp;&nbsp;User</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="#"><span class='fa fa-sign-in'></span>&nbsp;&nbsp;Login</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <div style="grid-area : 2 / 1 / 3 / 13; text-align : center;"><span style="font-weight : 600; font-size : 28px; position : relative; top : 20px;">Search by Entry</span></div>
+    <div style='grid-area : 3 / 2 / 4 / 12; display : grid; grid-template-columns : repeat(24, 1fr); grid-template-rows : 5px 35px 5px;'>
+        <div class="input-group" style='grid-area : 4 / 1 / 5 / 6;'>
+            <div class="input-group-prepend">
+                <span style='font-weight : 600' class="input-group-text" id="inputGroup-sizing-sm">BOP Register #:</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" required>
+        </div>
+        <div class='separator' style='text-align : center; padding-top : 5px; border-left : 1px solid lightgray; grid-area : 3 / 7 / 5 / 9'></div>
+        <div class="input-group" style='grid-area : 4 / 8 / 5 / 13;'>
+            <div class="input-group-prepend">
+                <span style='font-weight : 600' class="input-group-text" id="inputGroup-sizing-sm">Last Name:</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+        </div>
+        <div class="input-group" style='grid-area : 4 / 14 / 5 / 19;'>
+            <div class="input-group-prepend">
+                <span style='font-weight : 600' class="input-group-text" id="inputGroup-sizing-sm">First Name:</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+        </div>
+        <div class='separator' style='text-align : center; padding-top : 5px; border-left : 1px solid lightgray; grid-area : 3 / 20 / 5 / 21'></div>
+        <div class="input-group" style='grid-area : 4 / 21 / 5 / 25;'>
+            <div class="input-group-prepend">
+                <span style='font-weight : 600' class="input-group-text" id="inputGroup-sizing-sm">Case #:</span>
+            </div>
+            <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+        </div>
+    </div>
+    <div style='grid-area : 5 / 1 / 6 / 13; text-align : center;'><span style='font-weight : 600; font-size : 28px;'>Search by Selection</span></div>
+    <div style='grid-area : 6 / 2 / 12 / 12;'>
+        <table class="table table-striped table-bordered" width="100%">
+            <thead>
+                <tr>
+                    <th>BOP Register #</th>
+                    <th>Last Name</th>
+                    <th>First Name</th>
+                    <th>Case #</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inmate in inmates %}
+                    <tr>
+                        <td>{{ inmate.inmateNumber }}</td>
+                        <td>{{ inmate.lastName }}</td>
+                        <td>{{ inmate.firstName }}</td>
+                        <td>{{ inmate.caseTags }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class='form-button' style='grid-area : 12 / 2 / 13 / 3; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+        <a href="" role="button" class="btn btn-danger btn-block"><span class='fa fa-trash'>&nbsp;&nbsp;</span>Clear</a>
+    </div>
+    <div class='form-button' style='grid-area : 12 / 4 / 13 / 6; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+        <a href="" role="button" class="btn btn-light btn-block"><span class='fa fa-download'>&nbsp;&nbsp;</span>Export CSV Template</a>
+    </div>
+    <div class='form-button' style='grid-area : 12 / 8 / 13 / 10; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+        <a role="button" class="btn btn-light btn-block"><span class='fa fa-upload'>&nbsp;&nbsp;</span>Import CSV File</a>
+    </div>
+    <div class='form-button' style='grid-area : 12 / 11 / 13 / 12; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+        <form method='POST'>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a href="{% url 'fil:results' %}" role="button" class="btn btn-primary btn-block"><span class='fa fa-check-circle'>&nbsp;&nbsp;</span>Submit</a>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('.table').DataTable({
+                "scrollY" : "200px",
+                "scrollCollapse" : true,
+                "paging" : false
+            });
+            $('.login-button').click(function() {
+                $('#login-icon').toggleClass('fa-sign-in')
+                $('#login-icon').toggleClass('fa-sign-out')
+                $('#login-icon').hasClass('fa-sign-in') ? $(this).html('&nbsp;&nbsp;Login') : $(this).html('&nbsp;&nbsp;Logout')
+            });
+        });
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" style="grid-area : 1 / 1 / 1 / 13;">
+    <a href="#"><img style="height : 50px; width : 50px;" src="{% static 'images/usms-seal.png' %}"/></a>
+    <div class="navbar-brand" style="letter-spacing : 2px;">
+        <span class="mx-4" style="cursor : default; font-weight : 600;">Resource Management Portal</span>
+    </div>
+    <div class="collapse navbar-collapse" id="NavbarMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false"><span class='fa fa-user-circle'></span>&nbsp;&nbsp;User</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="#"><span class='fa fa-sign-in'></span>&nbsp;&nbsp;Login</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <div style="grid-area : 4 / 1 / 10 / 13; display : grid; grid-template-columns : repeat(12, 1fr); grid-template-rows : 75% 25%;">
+        <div style="grid-area : 1 / 4 / 2 / 6;">
+            <a href="{% url 'fil:index' %}"><img style="height : 250px; width : 250px;" src="{% static 'images/bop-seal.svg' %}"/></a>
+        </div>
+        <div style="grid-area : 2 / 4 / 4 / 6">
+            <form method='POST'>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a href="{% url 'fil:index' %}" role="button" class="shadow btn btn-light btn-block" style="filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));">&nbsp;&nbsp;Federal Inmate Lookup</a>
+            </form>
+        </div>
+        <div style="grid-area : 1 / 8 / 2 / 10;">
+            <a href="{% url 'geo:index' %}"><img style="height : 250px; width : 250px;" src="{% static 'images/globe.svg' %}"/></a>
+        </div>
+        <div style="grid-area : 2 / 8 / 4 / 10">
+            <form method='POST'>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a href="{% url 'geo:index' %}" role="button" class="shadow btn btn-light btn-block" style="filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));">&nbsp;&nbsp;Geospatial Analytics</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

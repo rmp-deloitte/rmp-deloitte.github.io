@@ -1,0 +1,81 @@
+.navbar-brand {
+    display : none;
+}
+
+#linkAssetManagementDashboard {
+    display : grid;
+    grid-template-rows : 75% 25%;
+    grid-area : 2 / 6 / 5 / 7;
+    height : 100%;
+    width : 100%;
+}
+
+#linkAssetManagementDashboard a img {
+    height : 125px;
+    width : 125px;
+    transform : translate(55%, 10%);
+}
+
+#linkFederalInmateLookup {
+    display : grid;
+    grid-template-rows : 75% 25%;
+    grid-area : 6 / 6 / 9 / 7;
+    height : 100%; width : 100%;
+}
+
+#linkFederalInmateLookup a img {
+    height : 125px;
+    width : 125px;
+    transform : translate(55%, 10%);
+}
+
+#linkGeospatialAnalytics {
+    display : grid;
+    grid-template-rows : 75% 25%;
+    grid-area : 10 / 6 / 13 / 7;
+}
+
+#linkGeospatialAnalytics a img {
+    height : 125px;
+    width : 125px;
+    transform : translate(55%, 10%);
+}
+
+.btn {
+    font-weight : 600;
+}
+
+@media screen and (min-width : 800px) {
+    .navbar-brand {
+        display : block;
+    }
+    #linkAssetManagementDashboard {
+        grid-area : 4 / 2 / 10 / 4;
+    }
+
+    #linkAssetManagementDashboard a img {
+        transform : translate(7.5%, 10%);
+        height : 225px;
+        width : 225px;
+    }
+
+    #linkFederalInmateLookup {
+        grid-area : 4 / 6 / 10 / 8;
+    }
+
+    #linkFederalInmateLookup a img {
+        transform : translate(7.5%, 10%);
+        height : 225px;
+        width : 225px;
+    }
+
+    #linkGeospatialAnalytics {
+        grid-area : 4 / 10 / 10 / 12;
+    }
+
+    #linkGeospatialAnalytics a img {
+        transform : translate(7.5%, 10%);
+        height : 225px;
+        width : 225px;
+    }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+	<head>
+		{% block title %}<title>Resource Management Portal</title>{% endblock %}
+        <meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		{% load static %}
+
+		<!-- Static CSS files -->
+		<link rel='icon' type='image/png', href="{% static 'images/usms-seal.png' %}">
+		<link rel="stylesheet" href="{% static 'css/dataTables.bootstrap4.min.css' %}">
+		<link rel='stylesheet' href="{% static 'frameworks/bootstrap/4.0.0/css/bootstrap.min.css' %}">
+		<link rel='stylesheet' href="{% static 'frameworks/font-awesome/css/font-awesome.min.css' %}">
+        <link rel='stylesheet' href="{% static 'css/base-layout.css' %}">
+
+		<!-- Static JS files -->
+        <script src="{% static 'js/jquery.min.js' %}"></script>
+		<script src="{% static 'js/popper.min.js' %}"></script>
+		<script src="{% static 'frameworks/bootstrap/4.0.0/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
+		<script src="{% static 'js/dataTables.bootstrap4.min.js' %}"></script>
+		<script src="{% static 'js/d3.v4.min.js' %}"></script>
+		<script src="{% static 'js/topojson.v2.min.js' %}"></script>
+	</head>
+	<body>
+        {% block navbar %}{% endblock %}
+		{% block content %}{% endblock %}
+	</body>
+</html>

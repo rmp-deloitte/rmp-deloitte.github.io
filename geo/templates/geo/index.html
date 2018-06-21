@@ -1,0 +1,319 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" style="grid-area : 1 / 1 / 1 / 13;">
+    <a href="{% url 'portal:index' %}"><img style="height : 50px; width : 50px;" src="{% static 'images/usms-seal.png' %}"/></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#NavbarMenu" aria-controls="NavbarMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+	<div class="collapse navbar-collapse" id="NavbarMenu">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item mx-4 dropdown">
+				<a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-globe">&nbsp;&nbsp;</span>Geospatial Analytics</a>
+				<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="#"><span class='fa fa-map'></span>&nbsp;&nbsp;Layers</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-Counties"><span id="Layer-Toggle-Icon-Counties" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Counties</a></li>
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-Districts"><span id="Layer-Toggle-Icon-Districts" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Districts</a></li>
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-MetroOffices"><span id="Layer-Toggle-Icon-MetroOffices" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Metro Offices</a></li>
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-NonServiceStates"><span id="Layer-Toggle-Icon-NonServiceStates" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Non-Service States</a></li>
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-Airports"><span id="Layer-Toggle-Icon-Airports" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Airports</a></li>
+                            <li><a class="dropdown-item" href="#" id="Layer-Toggle-Prisons"><span id="Layer-Toggle-Icon-Prisons" class='fa fa-toggle-off'></span>&nbsp;&nbsp;Prisons</a></li>
+                        </ul>
+                    </li>
+				</ul>
+			</li>
+		</ul>
+		<ul class="navbar-nav ml-auto">
+			<li class="nav-item dropdown">
+				<a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false"><span class='fa fa-user-circle'></span>&nbsp;&nbsp;User</a>
+				<div class="dropdown-menu dropdown-menu-right">
+					<a class="dropdown-item" href="#"><span class='fa fa-sign-in'></span>&nbsp;&nbsp;Login</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="wrapper geo">
+    <div id='Map-Container' style='background : white; grid-area : 1 / 1 / 13 / 13'>
+		<div style="z-index : 10; position : fixed; left : 35px; top : 85px;">
+			<button style="filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));" class="zoom-reset btn btn-dark" role="button"><span class="fa fa-home"></span></button>
+		</div>
+        <div id='Map' style='position: fixed;'>
+		</div>
+    </div>
+</div>
+<script>
+    var width = $("#Map-Container").width(),
+        height = $("#Map-Container").height(),
+        centered,
+        projection = d3.geoAlbersUsa().translate([width / 2, height / 1.95]).scale([width]),
+        path = d3.geoPath().projection(projection);
+		active = d3.select(null);
+
+    const svg = d3.select("#Map")
+        .append("svg")
+        .attr("id", "Map-SVG")
+        .attr("width", width)
+        .attr("height", height)
+		.on("click", stopped, true);
+
+	var zoom = d3.zoom()
+		.scaleExtent([1, 8])
+		.on("zoom", zoomed)
+
+    svg.append("rect")
+        .attr("id", "Map-Canvas")
+        .attr('fill', 'none')
+        .attr("width", width)
+        .attr("height", height)
+		.on("click", reset);
+
+    const g = svg.append('g')
+
+    d3.json("{% static 'json/us.json' %}", function(error, us) {
+        if (error) throw error;
+
+        var stabbv = {
+            1 : 'AL', 2 : 'AK', 4 : 'AZ', 5 :  'AR', 6 : 'CA', 8 : 'CO', 9 : 'CT',
+            10 : 'DE', 11 : 'DC', 12 : 'FL', 13 : 'GA', 15 : 'HI', 16 : 'ID',
+            17 : 'IL', 18 : 'IN', 19 : 'IA', 20 : 'KS', 21 : 'LA', 22 : 'LA',
+            23 : 'ME', 24 : 'MD', 25 : 'MA', 26 : 'MI', 27 : 'MN', 28 : 'MS',
+            29 : 'MO', 30 : 'MT', 31 : 'NE', 32 : 'NV', 33 : 'NH', 34 : 'NJ',
+            35 : 'NM', 36 : 'NY', 37 : 'NC', 38 : 'ND', 39 : 'OH', 40 : 'OK',
+            41 : 'OR', 42 : 'PA', 44 : 'RI', 45 : 'SC', 46 : 'SD', 47 : 'TN',
+            48 : 'TX', 49 : 'UT', 50 : 'VT', 51 : 'VA', 53 : 'WA', 54 : 'WV',
+            55 : 'WI', 56 : 'WY', 72 : 'PR' }
+
+        g.append("g")
+            .attr("id", "states")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("fill", "white")
+            .attr("stroke", "#333333")
+            .attr("stroke-width", 3)
+			.attr("id", function(d) { return "fips-" + d.id; })
+			.attr("class", function(d) {
+				switch (d.id) {
+					case 10:
+					case 21:
+					case 26:
+					case 28:
+					case 33:
+					case 34:
+					case 44:
+					case 50:
+					case 54:
+					case 56:
+						return "state non-office-state";
+					case 1:
+					case 2:
+					case 15:
+					case 16:
+					case 30:
+					case 32:
+					case 38:
+					case 72:
+					case 46:
+					 	return "state non-service-state";
+						break;
+					default:
+						return "state";
+						break;
+				}
+			})
+			.on("click", clicked);
+
+        g.selectAll("text")
+            .data(topojson.feature(us, us.objects.states).features)
+            .enter()
+            .append("text")
+            .attr('font-weight', 800)
+            .text(function(d) {
+                return stabbv[d.id];
+            })
+            .attr("class", "state-name")
+            .attr('style', 'text-shadow: -1px -1px white, -1px 1px white, 1px 1px white, 1px -1px white, -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white')
+            .attr("x", function(d) {
+                switch(d.id) {
+                    case 72:
+                    case 78:
+                        break;
+                    default:
+                        return path.centroid(d)[0];
+                        break;
+                }
+            })
+            .attr("y", function(d) {
+                switch(d.id) {
+                    case 72:
+                    case 78:
+                        break;
+                    default:
+                        return path.centroid(d)[1];
+                        break;
+                }
+            })
+            .attr("text-anchor", "middle");
+
+
+    });
+
+    d3.json("{% static 'json/us-districts.json' %}", function(error, data) {
+        g.append("g")
+            .attr("id", "Counties")
+            .selectAll("path")
+            .data(topojson.feature(data, data.objects.counties).features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("fill", 'none')
+            .attr("stroke", "gray")
+			.attr("opacity", 0.75)
+            .attr("class", "county")
+			.attr("visibility", "visible");
+
+		$("#Counties").toggle();
+
+        g.append("g")
+            .attr("id", "Districts")
+            .selectAll("path")
+            .data(topojson.feature(data, data.objects.districts).features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("fill", 'none')
+            .attr("stroke", "#333333")
+			.attr("stroke-width", 2)
+			.attr("stroke-dasharray", "5,5")
+            .attr("class", "district");
+
+		$("#Districts").toggle();
+    });
+
+	svg.call(zoom);
+
+	function clicked(d) {
+		if (active.node() === this) return reset();
+		active.classed("active", false);
+		active = d3.select(this).classed("active", true);
+
+		active._groups[0][0].id.css("fill", "tomato");
+
+		var bounds = path.bounds(d),
+		dx = bounds[1][0] - bounds[0][0],
+		dy = bounds[1][1] - bounds[0][1],
+		x = (bounds[0][0] + bounds[1][0]) / 2,
+		y = (bounds[0][1] + bounds[1][1]) / 2,
+		scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
+		translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+		svg.transition()
+			.duration(750)
+			.call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) ); // updated for d3 v4
+		}
+
+	function reset() {
+		active.classed("active", false);
+		active = d3.select(null);
+
+		svg.transition()
+		  .duration(750)
+		  .call( zoom.transform, d3.zoomIdentity ); // updated for d3 v4
+	}
+
+	function zoomed() {
+		g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+		g.attr("transform", d3.event.transform); // updated for d3 v4
+	}
+
+	function stopped() {
+		if (d3.event.defaultPrevented) d3.event.stopPropagation();
+	}
+
+	$("#Layer-Toggle-Counties").click(function() {
+		$("#Counties").toggle();
+		$("#Layer-Toggle-Icon-Counties").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-Counties").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-Districts").click(function() {
+		$("#Districts").toggle();
+		$("#Layer-Toggle-Icon-Districts").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-Districts").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-MetroOffices").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-MetroOffices").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-MetroOffices").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-NonServiceStates").click(function() {
+		$(".non-office-state").css("fill") === "rgb(128, 128, 128)" ? $(".non-office-state").css("fill", "rgb(255, 255, 255)") : $(".non-office-state").css("fill", "rgb(128, 128, 128)");
+		$(".non-service-state").css("fill") === "rgb(255, 99, 71)" ? $(".non-service-state").css("fill", "rgb(255, 255, 255)") : $(".non-service-state").css("fill", "rgb(255, 99, 71)");
+
+		$("#Layer-Toggle-Icon-NonServiceStates").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-NonServiceStates").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-Prisons").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-Prisons").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-Prisons").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-Airports").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-Airports").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-Airports").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-NonArmoredVehicles").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-NonArmoredVehicles").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-NonArmoredVehicles").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-ArmoredVehicles").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-ArmoredVehicles").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-ArmoredVehicles").toggleClass("fa-toggle-off");
+	});
+
+	$("#Layer-Toggle-SpecialtyVehicles").click(function() {
+		// $("#Districts").toggle();
+		$("#Layer-Toggle-Icon-SpecialtyVehicles").toggleClass("fa-toggle-on");
+		$("#Layer-Toggle-Icon-SpecialtyVehicles").toggleClass("fa-toggle-off");
+	});
+
+	$(".zoom-reset").click(function() {
+		reset()
+	});
+
+	$(".zoom-in").click(function() {
+		zoomed();
+	});
+
+    // Layers Submenu
+    $(".dropdown-menu a.dropdown-toggle").on("click", function(e) {
+       if (!$(this).next().hasClass("show")) {
+           $(this).parents(".dropdown-menu").first().find(".show").removeClass("show");
+       }
+        var $subMenu = $(this).next(".dropdown-menu");
+        $subMenu.toggleClass("show");
+
+        $(this).parents("li.nav-item.dropdown.show").on("hidden.bs.dropdown", function(e) {
+            $(".dropdown-submenu .show").removeClass("show");
+        });
+
+        return false;
+    });
+</script>
+{% endblock %}

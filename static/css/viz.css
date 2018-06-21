@@ -1,0 +1,77 @@
+/* Add shadow effect to chart */
+svg {
+	-webkit-filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.3));
+	filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));
+}
+
+/* Styling for the lines connecting the labels to the slices */
+polyline {
+	opacity: 0.3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+	shape-rendering: geometricPrecision;
+} 
+
+/* Styling for the donut slices */
+path {
+	shape-rendering: geometricPrecision;
+}
+
+/* Make the percentage on the text labels bold */
+.labelName tspan {
+	font-style: normal;
+	font-weight: 700;
+}
+
+.labelName {
+	font-size: 0.8em;
+	font-style: italic;
+}
+
+/* Styling vizes */
+.viz-container {
+	padding-right: 0;
+	padding-left: 0;
+}
+.viz-container:first-child {
+	padding-right: 10px;
+}
+.viz-container:last-child {
+	padding-left: 10px;
+}
+
+.viz {
+	height: 250px;
+	background: #f1f1f1;
+	margin-bottom: 10px;
+	border-radius: 5px;
+}
+.chart {
+	padding-top: 10px;
+}
+			
+#metric {
+	font-family: Verdana;
+	font-size: 24px;
+	font-weight: bold;
+}
+#metricTitle {
+	font-size: 12px;	
+}
+p {
+	filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));				
+}
+#caseload {
+	margin-top: 75px;
+	font-size: 112px;
+	margin: 0;
+}
+#caseload-average {
+	margin-top: -25px;
+	font-size: 112px;
+}
+#caseload-average-ranking {
+	margin-top: -25px;	
+	font-weight: bold;
+}

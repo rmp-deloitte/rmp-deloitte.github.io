@@ -1,0 +1,65 @@
+{% extends 'base_template.html' %}
+
+{% load static %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" style="grid-area : 1 / 1 / 1 / 13;">
+    <a href="{% url 'portal:index' %}"><img style="height : 50px; width : 50px;" src="{% static 'images/usms-seal.png' %}"/></a>
+    <div class="navbar-brand" style="letter-spacing : 2px;">
+        <span class="mx-4" style="cursor : default; font-weight : 600;">Federal Inmate Lookup</span>
+    </div>
+    <div class="collapse navbar-collapse" id="NavbarMenu">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="false" aria-expanded="false"><span class='fa fa-user-circle'></span>&nbsp;&nbsp;User</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="#"><span class='fa fa-sign-in'></span>&nbsp;&nbsp;Login</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+	<div class="wrapper">
+		<div class='table' style='grid-area : 3 / 2 / 10 / 12;'>
+			<table id="results-table" class="table table-striped table-bordered" width="100%">
+				<thead>
+					<tr>
+						<th>BOP Register #</th>
+						<th>Last Name</th>
+						<th>Middle Name</th>
+						<th>First Name</th>
+						<th>Age</th>
+						<th>Race</th>
+						<th>Gender</th>
+						<th>Facility</th>
+						<th>Release Date</th>
+						<th>Case Tags</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div style='grid-area : 12 / 2 / 13 / 3; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+			<a href="{% url 'fil:index' %}" role="button" class="btn btn-dark btn-block"><span class='fa fa-angle-double-left'>&nbsp;&nbsp;</span>Back</a>
+		</div>
+		<div style='grid-area : 12 / 11 / 13 / 12; filter: drop-shadow( 0px 3px 3px rgba(0,0,0,0.25));'>
+			<button type="button" class="btn btn-light btn-block"><span class='fa fa-download'>&nbsp;&nbsp;</span>Export Data</button>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+			$('#results-table').DataTable({
+				"scrollY" : "200px",
+				"scrollCollapse" : true,
+				"paging" : false
+			});
+			$('#Login-Button').click(function() {
+				$('#Login-Button-Icon').toggleClass('fa-sign-in')
+				$('#Login-Button-Icon').toggleClass('fa-sign-out')
+				$('#Login-Button-Icon').hasClass('fa-sign-in') ? $('#Login-Button-Label').html('Login') : $('#Login-Button-Label').html('Logout')
+			});
+		});
+	</script>
+{% endblock %}
